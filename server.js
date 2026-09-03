@@ -51,17 +51,40 @@ const contract = new ethers.Contract(contractAddress, contractABI, adminWallet);
 // POST /submit-feedback
 app.post("/submit-feedback", async (req, res) => {
   try {
-    const { feedbackText, courseId, studentId, studentPrivateKey } = req.body;
+    const {
+      feedbackText,
+      courseId,
+      studentId,
+      studentPrivateKey,
+      facultyName,
+      semester,
+      rating,
+      category,
+      isAnonymous,
+      walletAddress,
+      network,
+      timestamp,
+      status
+    } = req.body;
 
     if (!feedbackText || !courseId) {
       return res.status(400).json({ error: "feedbackText and courseId are required" });
     }
 
-    // Build IPFS content — include studentId so it's retrievable later
+    // Build IPFS content — include ALL fields for complete data consistency
     const ipfsContent = JSON.stringify({
       studentId: studentId || "Anonymous",
       courseId,
       feedbackText,
+      facultyName: facultyName || "Not provided",
+      semester: semester || "Not provided",
+      rating: rating || 0,
+      category: category || "Other",
+      isAnonymous: isAnonymous || false,
+      walletAddress: walletAddress || "Not provided",
+      network: network || "localhost",
+      timestamp: timestamp || new Date().toISOString(),
+      status: status || "Pending",
       submittedAt: new Date().toISOString(),
     });
 
@@ -91,6 +114,13 @@ app.post("/submit-feedback", async (req, res) => {
       ipfsUrl: `https://gateway.pinata.cloud/ipfs/${ipfsHash}`,
       student: studentWallet.address,
       studentId: studentId || "Anonymous",
+      facultyName: facultyName || "Not provided",
+      semester: semester || "Not provided",
+      rating: rating || 0,
+      category: category || "Other",
+      isAnonymous: isAnonymous || false,
+      network: network || "localhost",
+      status: status || "Pending"
     });
   } catch (error) {
     console.error("Error submitting feedback:", error);
@@ -129,21 +159,36 @@ app.get("/feedback/:id", async (req, res) => {
 
     const feedback = await contract.getFeedback(feedbackId);
 
-    // Fetch content from IPFS and parse studentId
-    let feedbackContent = null;
-    let studentId = null;
+    // Fetch full content from IPFS with ALL fields
+    let ipfsData = {
+      studentId: null,
+      feedbackText: null,
+      facultyName: null,
+      semester: null,
+      rating: null,
+      category: null,
+      isAnonymous: null,
+      walletAddress: null,
+      network: null,
+      status: null
+    };
+    
     try {
       const raw = await getFromIPFS(feedback.ipfsHash);
-      // Try parsing as JSON (new format), fallback to plain text (old format)
-      try {
-        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        feedbackContent = parsed.feedbackText || parsed;
-        studentId = parsed.studentId || null;
-      } catch {
-        feedbackContent = raw;
-      }
+      const parsed = (typeof raw === 'object' && raw !== null) ? raw : JSON.parse(raw);
+      ipfsData = { ...ipfsData, ...parsed };
+      console.log(`Detail fetch - ID: ${feedbackId}, data:`, Object.keys(ipfsData));
     } catch (e) {
       console.log("Could not fetch IPFS content:", e.message);
+    }
+
+    // Get transaction hash (from latest transaction for this feedback)
+    let transactionHash = null;
+    try {
+      const txReceipt = await provider.getTransactionReceipt(feedback.transactionHash || '');
+      if (txReceipt) transactionHash = txReceipt.hash;
+    } catch (e) {
+      console.log("Could not fetch transaction hash");
     }
 
     res.json({
@@ -152,12 +197,21 @@ app.get("/feedback/:id", async (req, res) => {
         id: feedback.id.toString(),
         ipfsHash: feedback.ipfsHash,
         ipfsUrl: `https://gateway.pinata.cloud/ipfs/${feedback.ipfsHash}`,
-        feedbackContent,
-        studentId,
+        transactionHash: feedback.transactionHash || 'N/A',
         student: feedback.student,
         courseId: feedback.courseId,
         status: feedback.status,
         timestamp: new Date(Number(feedback.timestamp) * 1000).toISOString(),
+        // Fields from IPFS
+        studentId: ipfsData.studentId,
+        feedbackText: ipfsData.feedbackText,
+        facultyName: ipfsData.facultyName,
+        semester: ipfsData.semester,
+        rating: ipfsData.rating,
+        category: ipfsData.category,
+        isAnonymous: ipfsData.isAnonymous,
+        walletAddress: ipfsData.walletAddress,
+        network: ipfsData.network
       },
     });
   } catch (error) {
@@ -171,23 +225,49 @@ app.get("/feedback", async (req, res) => {
   try {
     const allFeedback = await contract.getAllFeedback();
 
-    // Parse studentId from IPFS content for each feedback
+    // Fetch full data from IPFS for each feedback in parallel
     const formattedFeedback = await Promise.all(allFeedback.map(async (fb) => {
-      let studentId = null;
+      let ipfsData = {
+        studentId: null,
+        feedbackText: null,
+        facultyName: null,
+        semester: null,
+        rating: null,
+        category: null,
+        isAnonymous: null,
+        walletAddress: null,
+        network: null,
+        status: null
+      };
+      
       try {
         const raw = await getFromIPFS(fb.ipfsHash);
-        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        studentId = parsed.studentId || null;
-      } catch {}
+        const parsed = (typeof raw === 'object' && raw !== null) ? raw : JSON.parse(raw);
+        ipfsData = { ...ipfsData, ...parsed };
+        console.log(`Feedback #${fb.id} - complete data fetched from IPFS`);
+      } catch (e) {
+        console.log(`Could not parse IPFS for feedback #${fb.id}:`, e.message);
+      }
 
       return {
         id: fb.id.toString(),
         ipfsHash: fb.ipfsHash,
+        ipfsUrl: `https://gateway.pinata.cloud/ipfs/${fb.ipfsHash}`,
+        transactionHash: fb.transactionHash || 'N/A',
         student: fb.student,
-        studentId,
         courseId: fb.courseId,
         status: fb.status,
         timestamp: new Date(Number(fb.timestamp) * 1000).toISOString(),
+        // Fields from IPFS
+        studentId: ipfsData.studentId,
+        feedbackText: ipfsData.feedbackText,
+        facultyName: ipfsData.facultyName,
+        semester: ipfsData.semester,
+        rating: ipfsData.rating,
+        category: ipfsData.category,
+        isAnonymous: ipfsData.isAnonymous,
+        walletAddress: ipfsData.walletAddress,
+        network: ipfsData.network
       };
     }));
 

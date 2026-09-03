@@ -12,8 +12,8 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #04091a;
-  color: #fff;
+  background: #0a0a0a;
+  color: #f5efe7;
 }
 
 /* Sora for display headings */
@@ -23,9 +23,9 @@ h1, h2, .font-display { font-family: 'Sora', 'Inter', sans-serif; }
    BACKGROUND
 ───────────────────────────────────────── */
 
-/* Subtle dot-grid overlay */
+/* Subtle dot-grid overlay — warm beige tint */
 .bg-grid {
-  background-image: radial-gradient(rgba(99,102,241,0.12) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(214,203,191,0.06) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
@@ -33,68 +33,68 @@ h1, h2, .font-display { font-family: 'Sora', 'Inter', sans-serif; }
    GLASS MORPHISM
 ───────────────────────────────────────── */
 .glass {
-  background: rgba(255,255,255,0.035);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(26,26,26,0.85);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(42,42,42,0.9);
 }
 
 .glass-hover:hover {
-  background: rgba(255,255,255,0.065);
-  border-color: rgba(255,255,255,0.13);
+  background: rgba(30,30,30,0.95);
+  border-color: rgba(200,169,106,0.18);
   transform: translateY(-1px);
 }
 
 /* Elevated glass (modals, dropdowns) */
 .glass-elevated {
-  background: rgba(10,18,40,0.92);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(17,17,17,0.97);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(42,42,42,0.95);
 }
 
 /* ─────────────────────────────────────────
-   GLOW EFFECTS
+   SUBTLE GLOW EFFECTS (warm, not neon)
 ───────────────────────────────────────── */
-.glow-indigo { box-shadow: 0 0 24px rgba(99,102,241,0.35), 0 0 48px rgba(99,102,241,0.12); }
-.glow-blue   { box-shadow: 0 0 24px rgba(59,130,246,0.35), 0 0 48px rgba(59,130,246,0.12); }
-.glow-green  { box-shadow: 0 0 16px rgba(34,197,94,0.3); }
-.glow-red    { box-shadow: 0 0 16px rgba(239,68,68,0.3); }
+.glow-gold  { box-shadow: 0 0 20px rgba(200,169,106,0.15), 0 0 40px rgba(200,169,106,0.06); }
+.glow-beige { box-shadow: 0 0 20px rgba(214,203,191,0.12); }
+.glow-green { box-shadow: 0 0 14px rgba(34,197,94,0.18); }
+.glow-red   { box-shadow: 0 0 14px rgba(239,68,68,0.18); }
 
-/* Neon border pulse */
-@keyframes neonPulse {
-  0%, 100% { box-shadow: 0 0 6px rgba(99,102,241,0.3), inset 0 0 6px rgba(99,102,241,0.05); border-color: rgba(99,102,241,0.35); }
-  50%       { box-shadow: 0 0 18px rgba(99,102,241,0.55), inset 0 0 10px rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.65); }
+/* Soft border shimmer — replaces neon pulse */
+@keyframes softBorderPulse {
+  0%, 100% { border-color: rgba(200,169,106,0.18); box-shadow: 0 0 0 0 rgba(200,169,106,0); }
+  50%       { border-color: rgba(200,169,106,0.35); box-shadow: 0 0 12px rgba(200,169,106,0.08); }
 }
-.border-glow-anim { animation: neonPulse 3s ease-in-out infinite; }
+.border-glow-anim { animation: softBorderPulse 3.5s ease-in-out infinite; }
 
 /* ─────────────────────────────────────────
-   GRADIENT TEXT
+   GRADIENT TEXT — FeedChain brand
 ───────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #818cf8 0%, #60a5fa 50%, #a78bfa 100%);
+  background: linear-gradient(135deg, #d6cbbf 0%, #c8a96a 50%, #f5efe7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-gold {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #c8a96a, #d6cbbf);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 /* ─────────────────────────────────────────
-   INPUT FOCUS GLOW
+   INPUT FOCUS — beige accent
 ───────────────────────────────────────── */
 .input-glow {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .input-glow:focus {
   outline: none;
-  border-color: rgba(99,102,241,0.55) !important;
-  box-shadow: 0 0 0 3px rgba(99,102,241,0.12), 0 0 12px rgba(99,102,241,0.1);
+  border-color: rgba(200,169,106,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(200,169,106,0.08);
 }
 
 /* ─────────────────────────────────────────
@@ -146,12 +146,12 @@ h1, h2, .font-display { font-family: 'Sora', 'Inter', sans-serif; }
 .blob-float-slow { animation: floatBlob 18s ease-in-out infinite reverse; }
 
 /* ─────────────────────────────────────────
-   SCROLLBAR
+   SCROLLBAR — warm beige tint
 ───────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.35); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.6); }
+::-webkit-scrollbar-thumb { background: rgba(200,169,106,0.25); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,169,106,0.45); }
 
 /* ─────────────────────────────────────────
    WALLET DROPDOWN
@@ -161,27 +161,27 @@ h1, h2, .font-display { font-family: 'Sora', 'Inter', sans-serif; }
 }
 
 /* ─────────────────────────────────────────
-   BUTTON BASE
+   BUTTON BASE — beige/gold accent
 ───────────────────────────────────────── */
 .btn-primary {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  color: #fff;
+  background: linear-gradient(135deg, #c8a96a, #d6cbbf);
+  color: #0a0a0a;
   font-weight: 600;
   border-radius: 12px;
   transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: 0 4px 20px rgba(99,102,241,0.25);
+  box-shadow: 0 4px 18px rgba(200,169,106,0.2);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, #60a5fa, #818cf8);
-  box-shadow: 0 6px 28px rgba(99,102,241,0.4);
+  background: linear-gradient(135deg, #d6b87a, #e8ddd4);
+  box-shadow: 0 6px 24px rgba(200,169,106,0.3);
   transform: translateY(-1px);
 }
 .btn-primary:active { transform: translateY(0) scale(0.98); }
 .btn-primary:disabled {
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.06);
+  color: rgba(245,239,231,0.2);
   box-shadow: none;
   transform: none;
   cursor: not-allowed;
